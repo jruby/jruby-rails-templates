@@ -11,10 +11,8 @@ jdbc_gem_line = "\n  gem 'jdbc-#{jdbc_db}', :require => false" if jdbc_db
 
 gsub_file "Gemfile", /^#{db_gem_regexp}\w*$/, <<DB
 if defined?(JRUBY_VERSION)
-  gem 'activerecord-jdbc-adapter', :require => false#{jdbc_gem_line}
+  gem 'activerecord-jdbc-adapter'#{jdbc_gem_line}
 else
   #{db_gem_line}
 end
 DB
-
-run_ruby_script "script/rails generate jdbc"
