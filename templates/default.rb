@@ -4,6 +4,8 @@ db_gem_regexp = Regexp::quote(db_gem_line).gsub("'", "['\"]")
 jdbc_db = case options[:database]
           when /postgresql/
             "postgres"
+          when /mysql2/
+            "mysql"
           when /mysql|sqlite3/
             options[:database]
           end
@@ -16,3 +18,8 @@ else
   #{db_gem_line}
 end
 DB
+
+# Avoid MySQL2 option for Rails 3
+if options[:database] =~ /mysql/
+  gsub_file "config/database.yml", /mysql2/, 'mysql'
+end
