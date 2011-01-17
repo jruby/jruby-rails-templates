@@ -13,13 +13,13 @@ jdbc_db = case options[:database]
 jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => false" : <<JDBC
 \n
   # As rails --database switch does not support derby, hsqldb, h2 nor mssql
-  # as valid values, if your are not using SQLite, comment out the SQLite gem
+  # as valid values, if you are not using SQLite, comment out the SQLite gem
   # below and uncomment the gem declaration for the adapter you are using.
   # If you are using oracle, db2, sybase, informix or prefer to use the plain
   # JDBC adapter, comment out all the adapter gems below.
 
   # SQLite JDBC adapter
-  gem 'jdbc-#{jdbc_db}', :require => false
+  gem 'jdbc-sqlite3', :require => false
 
   # Derby JDBC adapter
   #gem 'activerecord-jdbcderby-adapter'
