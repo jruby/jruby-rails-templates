@@ -35,10 +35,12 @@ jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => f
 JDBC
 
 gsub_file "Gemfile", /^#{db_gem_regexp}\w*$/, <<DB
-if defined?(JRUBY_VERSION)
-  gem 'activerecord-jdbc-adapter'#{jdbc_gem_line}
-else
+platforms :ruby do
   #{db_gem_line}
+end
+
+platforms :jruby do
+  gem 'activerecord-jdbc-adapter'#{jdbc_gem_line}
 end
 DB
 
