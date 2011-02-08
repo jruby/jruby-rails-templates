@@ -1,5 +1,4 @@
 db_gem_line = "gem '#{gem_for_database}'"
-db_gem_line << ", :require => '#{require_for_database}'" if require_for_database
 db_gem_regexp = Regexp::quote(db_gem_line).gsub("'", "['\"]")
 jdbc_db = case options[:database]
           when /postgresql/
