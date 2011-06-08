@@ -33,12 +33,20 @@ jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => f
   #gem 'activerecord-jdbcmssql-adapter'
 JDBC
 
+if Rails::VERSION::MAJOR > 3 || Rails::VERSION::MINOR > 0
+  rhino_gem_line = <<RHINO
+  # the javascript engine for execjs gem
+  gem 'therubyrhino'
+RHINO
+end
+
 gsub_file "Gemfile", /^#{db_gem_regexp}\w*$/, <<DB
 platforms :ruby do
   #{db_gem_line}
 end
 
 platforms :jruby do
+#{rhino_gem_line}
   gem 'activerecord-jdbc-adapter'#{jdbc_gem_line}
 end
 DB
