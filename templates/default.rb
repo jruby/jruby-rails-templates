@@ -60,21 +60,23 @@ end
 file = "config/database.yml"
 
 comment = <<COMMENTS
-# If you are using derby, hsqldb, h2 or mssql with one of the ActiveRecord
-# JDBC adapters, configure your database setting as the example below:
+# If you are using mssql, derby, hsqldb, h2 or oracle with one of the
+# ActiveRecord JDBC adapters, configure your database setting as the
+# example below. (Note that for oracle you will need to include the
+# driver jar on the classpath.):
 #
 #development:
 #  adapter: mssql
 #  username: <username>
 #  password: <password>
-#  hostname: localhost
+#  host: localhost
 #  database: dummy
 
-# If you are using oracle, db2, sybase, informix or prefer to use the plain
-# JDBC adapter, configure your database setting as the example below (requires
-# you to download and manually install the database vendor's JDBC driver .jar
-# file). See your driver documentation for the apropriate driver class and
-# connection string:
+# If you are using db2, sybase, informix or prefer to directly specify
+# the JDBC connection information, configure your database setting as
+# the example below (requires you to download and manually install the
+# database vendor's JDBC driver .jar file). See your driver
+# documentation for the apropriate driver class and connection string:
 #
 #development:
 #  adapter: jdbc
