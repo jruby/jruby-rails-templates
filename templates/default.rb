@@ -1,15 +1,17 @@
-db_gem_line = "gem '#{gem_for_database}'"
-db_gem_regexp = Regexp::quote(db_gem_line).gsub("'", "['\"]")
-jdbc_db = case options[:database]
-          when /postgresql/
-            "postgres"
-          when /mysql2/
-            "mysql"
-          when /mysql|sqlite3/
-            options[:database]
-          end
+if options[:database] !~ /^jdbc/
+  jdbc_db = case options[:database]
+            when /^postgresql/
+              "postgres"
+            when /^mysql2/
+              "mysql"
+            when /^(mysql|sqlite3)/
+              options[:database]
+            end
 
-jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => false" : <<JDBC
+  db_gem_line = "gem '#{gem_for_database}'"
+  db_gem_regexp = Regexp::quote(db_gem_line).gsub("'", "['\"]")
+
+  jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => false" : <<JDBC
 \n
   # As rails --database switch does not support derby, hsqldb, h2 nor mssql
   # as valid values, if you are not using SQLite, comment out the SQLite gem
@@ -33,33 +35,23 @@ jdbc_gem_line = jdbc_db != 'sqlite3' ? "\n  gem 'jdbc-#{jdbc_db}', :require => f
   #gem 'activerecord-jdbcmssql-adapter'
 JDBC
 
-if Rails::VERSION::MAJOR > 3 || Rails::VERSION::MINOR > 0
-  rhino_gem_line = <<RHINO
-  # the javascript engine for execjs gem
-  gem 'therubyrhino'
-RHINO
-end
-
-gsub_file "Gemfile", /^#{db_gem_regexp}\w*$/, <<DB
+  gsub_file "Gemfile", /^#{db_gem_regexp}\w*$/, <<DB
 platforms :ruby do
   #{db_gem_line}
 end
 
 platforms :jruby do
-#{rhino_gem_line}
   gem 'activerecord-jdbc-adapter'#{jdbc_gem_line}
 end
 DB
 
-# Avoid MySQL2 option for Rails 3
-if options[:database] =~ /mysql/
-  gsub_file "config/database.yml", /mysql2/, 'mysql'
-end
+  # Avoid MySQL2 option for Rails 3
+  if options[:database] =~ /mysql/
+    gsub_file "config/database.yml", /mysql2/, 'mysql'
+  end
 
-# Add comments to config/database.yml
-file = "config/database.yml"
-
-comment = <<COMMENTS
+  # Add comments to config/database.yml
+  comment = <<COMMENTS
 # If you are using mssql, derby, hsqldb, h2 or oracle with one of the
 # ActiveRecord JDBC adapters, configure your database setting as the
 # example below. (Note that for oracle you will need to include the
@@ -87,6 +79,18 @@ comment = <<COMMENTS
 
 COMMENTS
 
-temp = IO.read(file)
+  prepend_to_file "config/database.yml", comment
+end
 
-open(file, "w") { |f| f << comment << temp }
+if Rails::VERSION::MAJOR > 3 || Rails::VERSION::MINOR > 0
+  rhino_gem_line = <<RHINO
+
+# the javascript engine for execjs gem
+platforms :jruby do
+  group :assets do
+    gem 'therubyrhino'
+  end
+end
+RHINO
+  append_to_file "Gemfile", rhino_gem_line
+end
